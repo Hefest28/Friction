@@ -1,6 +1,6 @@
 self.addEventListener("install", e => {
   e.waitUntil(
-    caches.open("checklist-cache").then(cache => {
+    caches.open("checklist-cache-v2").then(cache => {
       return cache.addAll([
         "index.html",
         "manifest.json"
@@ -16,3 +16,4 @@ self.addEventListener("fetch", e => {
     })
   );
 });
+
