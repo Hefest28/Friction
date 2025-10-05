@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="bg">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Чеклист с бройки</title>
+
+  <!-- PWA настройки -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <style>
+    body{font-family:Arial, sans-serif; margin:20px;}
+    .item{display:flex;align-items:center;margin:6px 0;}
+    .item input[type="checkbox"]{margin-right:8px;}
+    .count{width:60px;margin-left:auto;}
+    #summary{margin-top:20px;padding:10px;border:1px solid #ddd;border-radius:8px;}
+  </style>
+</head>
+<body>
+  <h1>📋 Чеклист</h1>
+
+  <div id="list"></div>
+
+  <div style="margin-top:10px;">
+    <input id="newItem" type="text" placeholder="Добави нов елемент">
+    <button onclick="addItem()">Добави</button>
+  </div>
+
+  <div id="summary"><b>Резюме:</b> (празно)</div>
+
+  <script>
+    let items = JSON.parse(localStorage.getItem("items")||"[]");
+
+    function render(){
+      const list=document.getElementById("list");
+      list.innerHTML="";
+      items.forEach((item,i)=>{
+        const row=document.createElement("div");
+        row.className="item";
+        row.innerHTML=`
+          <input type="checkbox" ${item.checked?"checked":""} onchange="toggle(${i})">
+          <span>${item.name}</span>
+          <input class="count" type="number" min="0" value="${item.count}" onchange="setCount(${i},this.value)">
+        `;
+        list.appendChild(row);
+      });
+      updateSummary();
+      localStorage.setItem("items",JSON.stringify(items));
+    }
+
+    function addItem(){
+      const name=document.getElementById("newItem").value.trim();
+      if(!name) return;
+      items.push({name,checked:false,count:0});
+      document.getElementById("newItem").value="";
+      render();
+    }
+
+    function toggle(i){ items[i].checked=!items[i].checked; render(); }
+    function setCount(i,val){ items[i].count=parseInt(val)||0; render(); }
+
+    function updateSummary(){
+      let summary=items.filter(it=>it.checked&&it.count>0)
+        .map(it=>`${it.name}: ${it.count} бр.`).join("<br>");
+      document.getElementById("summary").innerHTML="<b>Резюме:</b><br>"+(summary||"(празно)");
+    }
+
+    render();
+
+    // PWA service worker
+    if("serviceWorker" in navigator){
+      navigator.serviceWorker.register("service-worker.js");
+    }
+  </script>
+</body>
+</html>
