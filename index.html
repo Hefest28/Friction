@@ -105,6 +105,8 @@
         .filter(it => it.checked && it.count > 0)
         .map(it => `${it.name}: ${it.count} бр.`)
         .join("<br>");
+      document.getElementById("summary").innerHTML =
+        "<b>Резюме:</b><br>" + (summary || "(празно)");
     }
 
     render();
@@ -116,4 +118,5 @@
   </script>
 </body>
 </html>
+
 
