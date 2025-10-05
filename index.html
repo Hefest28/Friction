@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title> Заявка </title>
+  <title> Заявка</title>
 
   <!-- PWA настройки -->
   <link rel="manifest" href="manifest.json">
@@ -11,11 +11,35 @@
   <link rel="apple-touch-icon" href="icon-192.png">
 
   <style>
-    body{font-family:Arial, sans-serif; margin:20px;}
-    .item{display:flex;align-items:center;margin:6px 0;}
-    .item input[type="checkbox"]{margin-right:8px;}
-    .count{width:60px;margin-left:auto;}
-    #summary{margin-top:20px;padding:10px;border:1px solid #ddd;border-radius:8px;}
+    body {font-family: Arial, sans-serif; margin: 20px;}
+    .item {
+      display: flex;
+      align-items: center;
+      margin: 6px 0;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 6px 10px;
+    }
+    .item span {flex-grow: 1;}
+    .item input[type="checkbox"] {margin-right: 8px;}
+    .count {width: 60px; margin-right: 8px; text-align: center;}
+    .delete-btn {
+      background-color: #ff4b4b;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {background-color: #d63838;}
+    #summary {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    #newItem {padding: 5px;}
+    button {padding: 6px 10px; border-radius: 6px; cursor: pointer;}
   </style>
 </head>
 <body>
@@ -28,48 +52,67 @@
     <button onclick="addItem()">Добави</button>
   </div>
 
+  <div id="summary"><b>Резюме:</b> (празно)</div>
 
   <script>
-    let items = JSON.parse(localStorage.getItem("items")||"[]");
+    let items = JSON.parse(localStorage.getItem("items") || "[]");
 
-    function render(){
-      const list=document.getElementById("list");
-      list.innerHTML="";
-      items.forEach((item,i)=>{
-        const row=document.createElement("div");
-        row.className="item";
-        row.innerHTML=`
-          <input type="checkbox" ${item.checked?"checked":""} onchange="toggle(${i})">
+    function render() {
+      const list = document.getElementById("list");
+      list.innerHTML = "";
+
+      items.forEach((item, i) => {
+        const row = document.createElement("div");
+        row.className = "item";
+        row.innerHTML = `
+          <input type="checkbox" ${item.checked ? "checked" : ""} onchange="toggle(${i})">
           <span>${item.name}</span>
-          <input class="count" type="number" min="0" value="${item.count}" onchange="setCount(${i},this.value)">
+          <input class="count" type="number" min="0" value="${item.count}" onchange="setCount(${i}, this.value)">
+          <button class="delete-btn" onclick="deleteItem(${i})">🗑</button>
         `;
         list.appendChild(row);
       });
+
       updateSummary();
-      localStorage.setItem("items",JSON.stringify(items));
+      localStorage.setItem("items", JSON.stringify(items));
     }
 
-    function addItem(){
-      const name=document.getElementById("newItem").value.trim();
-      if(!name) return;
-      items.push({name,checked:false,count:0});
-      document.getElementById("newItem").value="";
+    function addItem() {
+      const name = document.getElementById("newItem").value.trim();
+      if (!name) return;
+      items.push({ name, checked: false, count: 0 });
+      document.getElementById("newItem").value = "";
       render();
     }
 
-    function toggle(i){ items[i].checked=!items[i].checked; render(); }
-    function setCount(i,val){ items[i].count=parseInt(val)||0; render(); }
+    function deleteItem(i) {
+      if (confirm(`Сигурен ли си, че искаш да изтриеш "${items[i].name}"?`)) {
+        items.splice(i, 1);
+        render();
+      }
+    }
 
-    function updateSummary(){
-      let summary=items.filter(it=>it.checked&&it.count>0)
-        .map(it=>`${it.name}: ${it.count} бр.`).join("<br>");
-      document.getElementById("summary").innerHTML="<b>Резюме:</b><br>"+(summary||"(празно)");
+    function toggle(i) {
+      items[i].checked = !items[i].checked;
+      render();
+    }
+
+    function setCount(i, val) {
+      items[i].count = parseInt(val) || 0;
+      render();
+    }
+
+    function updateSummary() {
+      let summary = items
+        .filter(it => it.checked && it.count > 0)
+        .map(it => `${it.name}: ${it.count} бр.`)
+        .join("<br>");
     }
 
     render();
 
     // PWA service worker
-    if("serviceWorker" in navigator){
+    if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("service-worker.js");
     }
   </script>
