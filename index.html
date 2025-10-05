@@ -52,6 +52,8 @@
     <button onclick="addItem()">Добави</button>
   </div>
 
+  <div id="summary"><b> Примекс </b> (празно)</div>
+
   <script>
     let items = JSON.parse(localStorage.getItem("items") || "[]");
 
@@ -106,7 +108,7 @@
         .map(it => `${it.name}: ${it.count} бр.`)
         .join("<br>");
       document.getElementById("summary").innerHTML =
-        "<b>Резюме:</b><br>" + (summary || "(празно)");
+        "<b> Примекс </b><br>" + (summary || "(празно)");
     }
 
     render();
@@ -118,5 +120,6 @@
   </script>
 </body>
 </html>
+
 
 
