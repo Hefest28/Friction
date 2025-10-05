@@ -1,6 +1,6 @@
 {
-  "name": "Чеклист с бройки",
-  "short_name": "Чеклист",
+  "name": "Заявка",
+  "short_name": "Заявка",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -18,3 +18,4 @@
     }
   ]
 }
+
